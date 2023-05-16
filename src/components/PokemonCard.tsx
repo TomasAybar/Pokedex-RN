@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,8 +7,14 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+
+import ImageColors from 'react-native-image-colors';
+
 import { SimplePokemon } from '../interfaces/pokemon.interfaces';
 import { FadeInImage } from './FadeInImage';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParams } from '../navigation/StackNavigation';
 
 interface Props {
   pokemon: SimplePokemon;
@@ -18,13 +24,39 @@ const windowWidth = Dimensions.get('window').width;
 
 export const PokemonCard = ({ pokemon }: Props) => {
   const [bgColor, setBgColor] = useState('grey');
+  const isMounted = useRef(true);
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   useEffect(() => {
-    // color dominante
+    ImageColors.getColors(pokemon.picture, { fallback: 'grey' }).then(
+      (colors) => {
+        if (!isMounted.current) return; // proteccion a la actualizacion de un componente cuando esta desmontado
+
+        if (colors?.platform === 'android') {
+          setBgColor(colors?.dominant || 'grey');
+        }
+
+        // ? setBgColor(color?.dominant || 'grey')
+        // : setBgColor(color?.background || 'grey');
+      }
+    );
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   return (
-    <TouchableOpacity activeOpacity={0.8}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() =>
+        navigation.navigate('PokemonScreen', {
+          SimplePokemon: pokemon,
+          color: bgColor,
+        })
+      }
+    >
       <View
         style={{
           ...styles.cardContainer,

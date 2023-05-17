@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FadeInImage } from '../components/FadeInImage';
 import { usePokemon } from '../hooks/usePokemon';
+import { PokemonDetails } from '../components/PokemonDetails';
 
 interface Props extends StackScreenProps<RootStackParams, 'PokemonScreen'> {}
 
@@ -19,7 +20,7 @@ export const PokemonScreen = ({ navigation, route }: Props) => {
 
   const { isLoading, pokemon } = usePokemon(id);
 
-  console.log(pokemon);
+  // console.log(pokemon);
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,9 +63,14 @@ export const PokemonScreen = ({ navigation, route }: Props) => {
       </View>
 
       {/* Detalles y loading */}
-      <View style={styles.activityIndicator}>
-        <ActivityIndicator color={color} size={50} />
-      </View>
+
+      {isLoading ? (
+        <View style={styles.activityIndicator}>
+          <ActivityIndicator color={color} size={50} />
+        </View>
+      ) : (
+        <PokemonDetails pokemon={pokemon} />
+      )}
     </View>
   );
 };

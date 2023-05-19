@@ -11,7 +11,7 @@ const App = () => {
       {/* <StackNavigation /> */}
       <Tabs />
     </NavigationContainer>
-  )
+  );
 };
 
 export default App;
